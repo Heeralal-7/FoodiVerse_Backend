@@ -1,7 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const connectDB = require('./src/config/db'); // Ab ye path ekdum sahi kaam karega
+const os = require('os');
+const connectDB = require('./src/config/db');
 
 const app = express();
 
@@ -9,20 +10,33 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+// Function to get Local Network IP
+const getLocalIP = () => {
+  const interfaces = os.networkInterfaces();
+  for (const name of Object.keys(interfaces)) {
+    for (const net of interfaces[name]) {
+      // IPv4 aur non-internal (external) address check karna
+      if (net.family === 'IPv4' && !net.internal) {
+        return net.address;
+      }
+    }
+  }
+  return 'localhost';
+};
+
 // Test Route
 app.get('/', (req, res) => {
   res.send('🍕 FoodiVerse API is running...');
 });
 
-// Future routes yahan connect honge:
-// app.use('/api/auth', require('./src/routes/authRoutes'));
-// app.use('/api/foods', require('./src/routes/foodRoutes'));
-
 const PORT = process.env.PORT || 5000;
+const localIP = getLocalIP();
 
 // Connect DB & Start Server
 connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`\n🚀 FoodiVerse Server is running:`);
+    console.log(`   ➜ Local:   http://localhost:${PORT}`);
+    console.log(`   ➜ Network: http://${localIP}:${PORT}\n`);
   });
 });
