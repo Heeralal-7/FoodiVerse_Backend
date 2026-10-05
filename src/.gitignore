@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+/node_modules
+
+# Environment & Secrets (Sabse Important)
+.env
+.env.local
+.env.production
+*.env
+
+# Firebase credentials (agar json key file use kar rahe ho)
+*serviceAccountKey*.json
+*firebase-adminsdk*.json
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime / Temporary files & Uploads
+pids
+*.pid
+*.seed
+*.pid.lock
+uploads/
+temp/
+tmp/
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
