@@ -10,6 +10,11 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+const path = require('path');
+
+// Static uploads folder serve karne ke liye
+app.use('/public', express.static(path.join(__dirname, 'public')));
+
 // Function to get Local Network IP
 const getLocalIP = () => {
   const interfaces = os.networkInterfaces();
