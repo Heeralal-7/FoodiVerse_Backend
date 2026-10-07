@@ -34,6 +34,9 @@ app.get('/', (req, res) => {
   res.send('🍕 FoodiVerse API is running...');
 });
 
+// ====================== User Routes =============
+app.use('/api/auth',require('./src/routes/authRoutes'));
+
 const PORT = process.env.PORT || 5000;
 const localIP = getLocalIP();
 
