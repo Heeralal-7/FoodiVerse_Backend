@@ -19,7 +19,7 @@ try {
 
     //check if user already exists
 
-    const userExists = await User.findOne({ email, phone });
+    const userExists = await User.findOne({ $or: [{ email:email.toLowerCase().trim() }, { phone }] });
     if (userExists) {
         return res.status(400).json({ message: 'User already exists' });
     }
@@ -89,8 +89,84 @@ const getUserProfile = async (req, res) => {
   
     }
   };
+  const loginUser = async (req, res) => {
+    try {
+      const { email, phone, password } = req.body;
+  
+
+      if (!password || (!email && !phone)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Please provide password and either email or phone number',
+        });
+      }
+  
+      // 2. Query criteria
+      const queryConditions = [];
+      if (email) queryConditions.push({ email: email.toLowerCase().trim() });
+      if (phone) queryConditions.push({ phone: phone.trim() });
+  
+      // 3. User ko find karein
+      const user = await User.findOne({ $or: queryConditions });
+  
+      if (!user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid credentials! User not found.',
+        });
+      }
+  
+      // 4. Check karein ki user account Active hai ya nahi
+      if (!user.isActive) {
+        return res.status(403).json({
+          success: false,
+          message: 'Your account has been deactivated. Please contact support.',
+        });
+      }
+  
+      // 5. Password Compare karein (bcrypt.compare)
+      const isPasswordMatch = await bcrypt.compare(password, user.password);
+  
+      if (!isPasswordMatch) {
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid credentials! Password does not match.',
+        });
+      }
+  
+      // 6. JWT Token generate karein
+      const token = generateToken(user._id, user.role);
+  
+      // 7. Success Response bhejein (Password hata kar)
+      return res.status(200).json({
+        success: true,
+        message: 'Login successful!',
+        token,
+        data: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          role: user.role,
+          profileImage: user.profileImage,
+          assignedTabs: user.assignedTabs, // Sub-Admin dashboard ke access ke liye
+        },
+      });
+  
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: 'Server error during login',
+        error: error.message,
+      });
+    }
+  };
+    
+  
+
 
 module.exports = {
     registerUser,
-    getUserProfile
+    getUserProfile,
+    loginUser
 }
