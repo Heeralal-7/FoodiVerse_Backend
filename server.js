@@ -12,9 +12,8 @@ app.use(cors());
 
 const path = require('path');
 
-// Static uploads folder serve karne ke liye
-app.use('/public', express.static(path.join(__dirname, 'public')));
-
+// Sirf clean '/uploads' route serve hoga (bina '/public' ke)
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 // Function to get Local Network IP
 const getLocalIP = () => {
   const interfaces = os.networkInterfaces();

@@ -99,9 +99,24 @@ const bannerUploads = multer({
   limits: { fileSize: 5 * 1024 * 1024 },
 }).single('bannerImage');
 
+// Profile photos directory
+const profileDir = 'public/uploads/profiles';
+ensureDir(profileDir);
+
+const profileUpload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => cb(null, profileDir),
+    filename: (req, file, cb) =>
+      cb(null, `profile-${Date.now()}${path.extname(file.originalname)}`),
+  }),
+  fileFilter,
+  limits: { fileSize: 3 * 1024 * 1024 }, // 3MB limit
+}).single('profileImage');
+
 module.exports = {
   foodUploads,
   vendorUploads,
   driverUploads,
   bannerUploads,
+  profileUpload
 };

@@ -1,6 +1,8 @@
 const User = require('../models/usersModel');
 const bcrypt = require('bcryptjs');
 const generateToken = require('../utils/generateToken');
+const { deleteFile } = require('../utils/fileHandler'); 
+
 
 //     Register a new user
 // @route  POST /api/auth/register-user
@@ -162,11 +164,81 @@ const getUserProfile = async (req, res) => {
     }
   };
     
+  // @desc    Update User Profile
+  // @route   PUT /api/auth/profile
+  // @access  Private (JWT Token Required)
+  const updateUserProfile = async (req, res) => {
+    try {
+      // 1. Current logged-in user ko find karein
+      const user = await User.findById(req.user._id);
   
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found',
+        });
+      }
+  
+      // 2. Normal text fields update karein (agar request me bheje gaye hon)
+      if (req.body.name) user.name = req.body.name.trim();
+      if (req.body.phone) user.phone = req.body.phone.trim();
+  
+      if (req.file) {
+        // Purani photo delete karein
+        if (user.profileImage) {
+          deleteFile(user.profileImage);
+        }
+      
+        // Windows path fix ('\') aur 'public/' ko remove karke clean path banana:
+        const cleanPath = req.file.path.replace(/\\/g, '/').replace(/^public\//, '');
+        
+        user.profileImage = cleanPath; // Ab DB me 'uploads/profiles/...' save hoga
+      }
+  
+      // 4. Password update (agar user ne naya password bheja ho)
+      if (req.body.password) {
+        if (req.body.password.length < 6) {
+          return res.status(400).json({
+            success: false,
+            message: 'Password must be at least 6 characters long',
+          });
+        }
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(req.body.password, salt);
+      }
+  
+      // 5. Database me save karein
+      const updatedUser = await user.save();
+  
+      // 6. Response return karein (Password chhod kar)
+      return res.status(200).json({
+        success: true,
+        message: 'Profile updated successfully!',
+        data: {
+          _id: updatedUser._id,
+          name: updatedUser.name,
+          email: updatedUser.email,
+          phone: updatedUser.phone,
+          role: updatedUser.role,
+          profileImage: updatedUser.profileImage,
+        },
+      });
+  
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: 'Server error while updating profile',
+        error: error.message,
+      });
+    }
+  };
+           
+
 
 
 module.exports = {
     registerUser,
     getUserProfile,
-    loginUser
+    loginUser,
+    updateUserProfile
 }
