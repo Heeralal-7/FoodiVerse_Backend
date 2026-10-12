@@ -9,7 +9,7 @@ const { profileUpload } = require('../../middlewares/multer');
 router.post('/register-user', registerUser); 
 router.post('/login-user', loginUser); 
 
-router.get('/user-profile', protect, getUserProfile); 
-router.put('/user-profile/update', protect,profileUpload,updateUserProfile); 
+router.get('/user-profile',protect('user'), getUserProfile); 
+router.put('/user-profile/update', protect('user'),profileUpload,updateUserProfile); 
 
 module.exports = router;
