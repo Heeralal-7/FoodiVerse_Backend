@@ -1,7 +1,7 @@
-const User = require('../models/usersModel');
+const User = require('../../models/usersModel');
 const bcrypt = require('bcryptjs');
-const generateToken = require('../utils/generateToken');
-const { deleteFile } = require('../utils/fileHandler'); 
+const generateToken = require('../../utils/generateToken');
+const { deleteFile } = require('../../utils/fileHandler'); 
 
 
 //     Register a new user

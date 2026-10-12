@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { registerUser,getUserProfile, loginUser, updateUserProfile } = require('../controllers/authController');
-const { protect } = require('../middlewares/authMiddleware');
-const { profileUpload } = require('../middlewares/multer');
+const { registerUser,getUserProfile, loginUser, updateUserProfile } = require('../../controllers/User/authController');
+const { protect } = require('../../middlewares/authMiddleware');
+const { profileUpload } = require('../../middlewares/multer');
 
 //Base route: /api/auth
 

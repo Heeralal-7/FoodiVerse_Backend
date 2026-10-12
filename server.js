@@ -14,6 +14,7 @@ const path = require('path');
 
 // Sirf clean '/uploads' route serve hoga (bina '/public' ke)
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+
 // Function to get Local Network IP
 const getLocalIP = () => {
   const interfaces = os.networkInterfaces();
@@ -34,7 +35,7 @@ app.get('/', (req, res) => {
 });
 
 // ====================== User Routes =============
-app.use('/api/auth',require('./src/routes/authRoutes'));
+app.use('/api/auth',require('./src/routes/User/authRoutes'));
 
 const PORT = process.env.PORT || 5000;
 const localIP = getLocalIP();
@@ -42,7 +43,7 @@ const localIP = getLocalIP();
 // Connect DB & Start Server
 connectDB().then(() => {
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`\n🚀 FoodiVerse Server is running:`);
+    console.log(`\n FoodiVerse Server is running:`);
     console.log(`   ➜ Local:   http://localhost:${PORT}`);
     console.log(`   ➜ Network: http://${localIP}:${PORT}\n`);
   });
