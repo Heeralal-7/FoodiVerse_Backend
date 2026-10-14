@@ -16,6 +16,8 @@ const { foodUpload } = require('../../middlewares/multer');
 
 // Tab ID 16 = Food Items (seedTabs.js ke according)
 
+// Base route: /api/admin/foods
+
 // 1. Create Food
 router.post(
   '/create',
@@ -27,7 +29,7 @@ router.post(
 
 // 2. Get All Foods (View)
 router.get(
-  '/get-all',
+  '/all',
   protect(['admin', 'subadmin']),
   checkRoleAccess(16, 'canView'),
   getAllFoods

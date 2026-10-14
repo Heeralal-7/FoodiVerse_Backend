@@ -4,64 +4,73 @@ const generateToken = require('../../utils/generateToken');
 const { deleteFile } = require('../../utils/fileHandler'); 
 
 
-//     Register a new user
-// @route  POST /api/auth/register-user
+// Register a new user / admin / vendor / driver
+// @route POST /api/auth/register-user
 const registerUser = async (req, res) => {
+  try {
+    // 1. 'role' ko bhi destructure karein
+    const { name, email, password, phone, role } = req.body;
 
-try {
-    //get data from request body
-    const{ name, email, password, phone } = req.body;
-
-    //Validate user input
-    if(!name||!email||!password||!phone){
-        return res.status(400).json({
-            message: 'Please fill all fields'
-        })
+    // 2. Validate user input
+    if (!name || !email || !password || !phone) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please fill all required fields',
+      });
     }
 
-    //check if user already exists
+    // 3. Check if user already exists (Clean email & phone check)
+    const cleanEmail = email.toLowerCase().trim();
+    const cleanPhone = phone.trim();
 
-    const userExists = await User.findOne({ $or: [{ email:email.toLowerCase().trim() }, { phone }] });
+    const userExists = await User.findOne({
+      $or: [{ email: cleanEmail }, { phone: cleanPhone }],
+    });
+
     if (userExists) {
-        return res.status(400).json({ message: 'User already exists' });
+      return res.status(400).json({
+        success: false,
+        message: 'User already exists with this email or phone number',
+      });
     }
 
-    //hash password
+    // 4. Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    //create new user
+    // 5. Create new user with ROLE
     const user = await User.create({
-        name,
-        email,
-        password: hashedPassword,
-        phone
+      name: name.trim(),
+      email: cleanEmail,
+      password: hashedPassword,
+      phone: cleanPhone,
+      role: role || 'user', // 👈 Agar role pass kiya hai toh wo save hoga, nahi toh 'user'
     });
 
-    // generate token
+    // 6. Generate token
     const token = generateToken(user._id, user.role);
 
-    //send response
+    // 7. Send response (role ke sath)
     res.status(201).json({
-        success: true,
-        message: 'User registered successfully',
-        token: token,
-        data: {
-            id:user._id,
-            name:user.name,
-            email:user.email,
-            phone:user.phone
-        },
+      success: true,
+      message: `${user.role.toUpperCase()} registered successfully!`,
+      token: token,
+      data: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role, // 👈 Response me role dikhega
+      },
     });
-
-}  catch (error) {
+  } catch (error) {
     res.status(500).json({
-        success: false,
-        message: 'Server error',
-        error: error.message
+      success: false,
+      message: 'Server error',
+      error: error.message,
     });
-}
-}
+  }
+};
 
 const getUserProfile = async (req, res) => {
     try {

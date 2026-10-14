@@ -3,7 +3,7 @@ const Food = require('../../models/foodModel');
 const { deleteFile } = require('../../utils/fileHandler');
 
 // 1. CREATE FOOD ITEM
-// @route   POST /api/admin/foods
+// @route   POST /api/admin/foods/create
 const createFood = async (req, res) => {
   try {
     const { name, description, price, category, isVeg, prepTime } = req.body;
@@ -52,7 +52,7 @@ const createFood = async (req, res) => {
 };
 
 // 2. GET ALL FOOD ITEMS (With Search, Filter & Pagination)
-// @route   GET /api/admin/foods
+// @route   GET /api/admin/foods/all
 const getAllFoods = async (req, res) => {
   try {
     const { page = 1, limit = 10, search = '', category, isVeg, isAvailable } = req.query;
@@ -108,7 +108,7 @@ const getAllFoods = async (req, res) => {
 };
 
 // 3. GET SINGLE FOOD BY ID
-// @route   GET /api/admin/foods/:id
+// @route   GET /api/admin/foods/detail/:id
 const getFoodById = async (req, res) => {
   try {
     const food = await Food.findById(req.params.id);
@@ -134,7 +134,7 @@ const getFoodById = async (req, res) => {
 };
 
 // 4. UPDATE FOOD ITEM (With auto-delete old image)
-// @route   PUT /api/admin/foods/:id
+// @route   PUT /api/admin/foods/update/:id
 const updateFood = async (req, res) => {
   try {
     const food = await Food.findById(req.params.id);

@@ -24,6 +24,7 @@ const foodSchema = new mongoose.Schema(
       required: [true, 'Please provide food category'], // e.g. Pizza, Burger, Desserts
       trim: true,
     },
+    restaurant: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant', required: false },
     isVeg: {
       type: Boolean,
       default: true,
