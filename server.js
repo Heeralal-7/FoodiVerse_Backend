@@ -37,6 +37,10 @@ app.get('/', (req, res) => {
 // ====================== User Routes =============
 app.use('/api/auth',require('./src/routes/User/authRoutes'));
 
+//====================== Admin Routes =============
+app.use('/api/admin/foods', require('./src/routes/admin/foodRoutes'));
+
+
 const PORT = process.env.PORT || 5000;
 const localIP = getLocalIP();
 

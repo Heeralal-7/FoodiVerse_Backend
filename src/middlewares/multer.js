@@ -20,24 +20,21 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// ----------------------------------------------------
-// 1. FOOD & DISHES UPLOAD CONFIGURATION
-// ----------------------------------------------------
+// Agar nahi hai toh multer.js me ye add kar lijiye:
 const foodDir = 'public/uploads/foods';
 ensureDir(foodDir);
 
-const foodUploads = multer({
+const foodUpload = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => cb(null, foodDir),
     filename: (req, file, cb) =>
-      cb(null, `food-${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(file.originalname)}`),
+      cb(null, `food-${Date.now()}${path.extname(file.originalname)}`),
   }),
   fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
-}).fields([
-  { name: 'image', maxCount: 1 },
-  { name: 'galleryImages', maxCount: 5 },
-]);
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+}).single('image');
+
+
 
 // ----------------------------------------------------
 // 2. VENDOR / RESTAURANT PROFILE & KYC UPLOADS
@@ -114,7 +111,7 @@ const profileUpload = multer({
 }).single('profileImage');
 
 module.exports = {
-  foodUploads,
+  foodUpload,
   vendorUploads,
   driverUploads,
   bannerUploads,
