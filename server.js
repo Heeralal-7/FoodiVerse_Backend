@@ -36,6 +36,8 @@ app.get('/', (req, res) => {
 
 // ====================== User Routes =============
 app.use('/api/auth',require('./src/routes/User/authRoutes'));
+// server.js
+app.use('/api/user/foods', require('./src/routes/User/foodRoute'));
 
 //====================== Admin Routes =============
 app.use('/api/admin/foods', require('./src/routes/admin/foodRoutes'));
